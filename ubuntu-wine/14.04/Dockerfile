@@ -1,0 +1,62 @@
+FROM       sagu/ubuntu-sshd:14.04
+
+ENV WINE_MONO_VERSION 0.0.8
+
+RUN addgroup --system xusers \
+  && adduser \
+			--home /home/xclient \
+			--disabled-password \
+			--shell /bin/bash \
+			--gecos "user for running an xclient application" \
+			--ingroup xusers \
+			--quiet \
+			xclient
+
+# Install packages required for connecting against X Server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+				xauth \
+		&& rm -rf /var/lib/apt/lists/*
+
+# Before switching user, root needs to ensure that entrypoint can be executed.
+COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+USER root
+
+# Install some tools required for creating the image
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		curl \
+		unzip \
+		ca-certificates
+
+# Install wine and related packages
+RUN dpkg --add-architecture i386 \
+		&& apt-get update \
+		&& apt-get install -y --no-install-recommends \
+				wine \
+				wine32 \
+		&& rm -rf /var/lib/apt/lists/*
+
+# Use the latest version of winetricks
+RUN curl -SL 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks' -o /usr/local/bin/winetricks \
+		&& chmod +x /usr/local/bin/winetricks
+
+# Get latest version of mono for wine
+RUN mkdir -p /usr/share/wine/mono \
+	&& curl -SL 'http://sourceforge.net/projects/wine/files/Wine%20Mono/$WINE_MONO_VERSION/wine-mono-$WINE_MONO_VERSION.msi/download' -o /usr/share/wine/mono/wine-mono-$WINE_MONO_VERSION.msi \
+	&& chmod +x /usr/share/wine/mono/wine-mono-$WINE_MONO_VERSION.msi
+
+# Wine really doesn't like to be run as root, so let's use a non-root user
+USER xclient
+ENV HOME /home/xclient
+ENV WINEPREFIX /home/xclient/.wine
+ENV WINEARCH win32
+
+# Use xclient's home dir as working dir
+WORKDIR /home/xclient
+
+RUN echo "alias winegui='wine explorer /desktop=DockerDesktop,1024x768'" > ~/.bash_aliases 
+# During startup we need to prepare connection to X11-Server container
+USER xclient
+ENTRYPOINT apt-get update -q && /usr/sbin/sshd -D && export DISPLAY=xserver:0 && xauth merge /Xauthority/xserver.xauth
