@@ -17,9 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 				xauth \
 		&& rm -rf /var/lib/apt/lists/*
 
-# Before switching user, root needs to ensure that entrypoint can be executed.
-COPY docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 USER root
 
