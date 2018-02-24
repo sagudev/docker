@@ -1,4 +1,4 @@
-FROM       sagu/ubuntu-sshd:17.10
+FROM       sagu/ubuntu-sshd:16.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV WINE_MONO_VERSION 4.7.1
@@ -47,7 +47,7 @@ RUN dpkg --add-architecture i386 \
 		&& apt-key add Release.key \
 		&& apt-add-repository https://dl.winehq.org/wine-builds/ubuntu/ \
 		&& apt-get update \
-		&& apt-get install -y --no-install-recommends winehq-stable
+		&& apt-get install -y --no-install-recommends winehq-devel
 
 RUN curl -O https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && chmod +x winetricks && sudo mv winetricks /usr/local/bin
 
