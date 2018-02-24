@@ -2,8 +2,8 @@ FROM       sagu/ubuntu-sshd:18.04
 
 RUN apt-get update && apt install sudo
 
-RUN addgroup --system xusers
-RUN adduser --home /home/xclient --disabled-password --shell /bin/bash --gecos "user for running an xclient application" --ingroup xusers --quiet xclient
+
+RUN addgroup --system xusers && adduser --home /home/xclient --disabled-password --shell /bin/bash --gecos "user for running an xclient application" --ingroup xusers --quiet xclient && usermod -a -G sudo xusers && echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 
 RUN usermod -a -G sudo xusers && echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
