@@ -1,4 +1,4 @@
-FROM       sagu/ubuntu-sshd:17.10
+FROM       sagu/ubuntu-gui:17.10
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV WINE_MONO_VERSION 4.7.1
@@ -7,16 +7,16 @@ ENV WINE_GECKO_VERSION 2.47
 RUN apt-get update && apt install sudo software-properties-common apt-transport-https -y --no-install-recommends
 
 
-RUN addgroup --system xusers && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
-RUN adduser --home /home/xclient --disabled-password --shell /bin/bash --gecos "user for running an xclient application" --ingroup xusers --quiet xclient
+#RUN addgroup --system xusers
+RUN useradd --home /home/xclient -m --shell /bin/bash -U xclient && echo "xclient:root" | chpasswd
 
 
 RUN usermod -a -G sudo xclient && echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Install packages required for connecting against X Server
-RUN apt-get install -y --no-install-recommends \
-				xauth \
-		&& rm -rf /var/lib/apt/lists/*
+#RUN apt-get install -y --no-install-recommends \
+#				xauth \
+#		&& rm -rf /var/lib/apt/lists/*
 
 
 USER root
@@ -66,7 +66,7 @@ ENV WINEARCH win32
 # Use xclient's home dir as working dir
 WORKDIR /home/xclient
 
-RUN echo "alias winegui='wine explorer /desktop=DockerDesktop,1024x768'" > ~/.bash_aliases 
+RUN sudo echo "alias winegui='wine explorer /desktop=DockerDesktop,1024x768'" > ~/.bash_aliases 
 # During startup we need to prepare connection to X11-Server container
 USER xclient
-ENTRYPOINT export DISPLAY=192.168.99.1:0 && sudo /usr/sbin/sshd -D && export DISPLAY=xserver:0 && xauth merge /Xauthority/xserver.xauth && echo If you want to run app as root use sudo or login to root with password root && sudo apt-get update -q
+ENTRYPOINT sudo /usr/sbin/sshd -D && echo If you want to run app as root use sudo or login to root. password for both users is root && sudo apt-get update -q
