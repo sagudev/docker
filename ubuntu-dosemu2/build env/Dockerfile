@@ -1,0 +1,72 @@
+FROM       sagu/ubuntu-sshd:16.04
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV WINE_MONO_VERSION 4.7.1
+ENV WINE_GECKO_VERSION 2.47
+
+RUN apt-get update && apt install sudo software-properties-common apt-transport-https -y --no-install-recommends
+
+
+RUN addgroup --system xusers && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+RUN adduser --home /home/xclient --disabled-password --shell /bin/bash --gecos "user for running an xclient application" --ingroup xusers --quiet xclient
+
+
+RUN usermod -a -G sudo xclient && echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Install packages required for connecting against X Server
+RUN apt-get install -y --no-install-recommends \
+				xauth \
+		&& rm -rf /var/lib/apt/lists/*
+
+
+USER root
+
+RUN apt-get -y update \
+    && DEBIAN_FRONTEND=${DEBIAN_FRONTEND} \
+    && apt-get -y install wget \
+    && mkdir -p /usr/share/wine/gecko \
+    && wget "http://dl.winehq.org/wine/wine-gecko/${WINE_GECKO_VERSION}/wine_gecko-${WINE_GECKO_VERSION}-x86.msi" -O /usr/share/wine/gecko/wine_gecko-${WINE_GECKO_VERSION}-x86.msi \
+    && chmod +x /usr/share/wine/gecko/wine_gecko-${WINE_GECKO_VERSION}-x86.msi \
+    && wget "http://dl.winehq.org/wine/wine-gecko/${WINE_GECKO_VERSION}/wine_gecko-${WINE_GECKO_VERSION}-x86_64.msi" -O /usr/share/wine/gecko/wine_gecko-${WINE_GECKO_VERSION}-x86_64.msi \
+    && chmod +x /usr/share/wine/gecko/wine_gecko-${WINE_GECKO_VERSION}-x86_64.msi \
+    && mkdir -p /usr/share/wine/mono \
+    && wget "http://dl.winehq.org/wine/wine-mono/${WINE_MONO_VERSION}/wine-mono-${WINE_MONO_VERSION}.msi" -O /usr/share/wine/mono/wine-mono-${WINE_MONO_VERSION}.msi \
+    && chmod +x /usr/share/wine/mono/wine-mono-${WINE_MONO_VERSION}.msi \
+&& rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+
+# Install some tools required for creating the image
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		curl \
+		unzip \
+		dosbox \
+		ca-certificates
+
+# Install wine and related packages
+RUN dpkg --add-architecture i386 \
+		&& wget -nc https://dl.winehq.org/wine-builds/Release.key \
+		&& apt-key add Release.key \
+		&& apt-add-repository https://dl.winehq.org/wine-builds/ubuntu/ \
+		&& apt-get update \
+		&& apt-get install -y --no-install-recommends winehq-stable
+
+RUN curl -O https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && chmod +x winetricks && sudo mv winetricks /usr/local/bin
+
+#-----------------------------------------------------------------------------
+# Cleanup Installation
+#-----------------------------------------------------------------------------
+RUN apt-get -y clean \
+&& rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+
+# Wine really doesn't like to be run as root, so let's use a non-root user
+USER xclient
+ENV HOME /home/xclient
+ENV WINEPREFIX /home/xclient/.wine
+ENV WINEARCH win32
+
+# Use xclient's home dir as working dir
+WORKDIR /home/xclient
+
+RUN echo "alias winegui='wine explorer /desktop=DockerDesktop,1024x768'" > ~/.bash_aliases 
+# During startup we need to prepare connection to X11-Server container
+USER xclient
+ENTRYPOINT export DISPLAY=192.168.99.1:0 && sudo /usr/sbin/sshd -D && export DISPLAY=xserver:0 && xauth merge /Xauthority/xserver.xauth && echo If you want to run app as root use sudo or login to root with password root && sudo apt-get update -q
