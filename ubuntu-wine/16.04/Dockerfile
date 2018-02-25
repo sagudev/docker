@@ -1,4 +1,4 @@
-FROM       sagu/ubuntu-sshd:16.04
+FROM       sagu/ubuntu-gui:16.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV WINE_MONO_VERSION 4.7.1
@@ -14,9 +14,9 @@ RUN adduser --home /home/xclient --disabled-password --shell /bin/bash --gecos "
 RUN usermod -a -G sudo xclient && echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Install packages required for connecting against X Server
-RUN apt-get install -y --no-install-recommends \
-				xauth \
-		&& rm -rf /var/lib/apt/lists/*
+#RUN apt-get install -y --no-install-recommends \
+#				xauth \
+#		&& rm -rf /var/lib/apt/lists/*
 
 
 USER root
