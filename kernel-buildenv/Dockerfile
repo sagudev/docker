@@ -42,4 +42,3 @@ WORKDIR ${LINUX_DIR}
 
 # Update git tree
 RUN git fetch --tags
-ENTRYPOINT git fetch --tags
