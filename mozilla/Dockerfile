@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt upgrade -y && apt install wget curl python-pip -y
+RUN apt update && apt upgrade -y && apt install wget curl python-pip -y --no-install-recommends
 
 RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
