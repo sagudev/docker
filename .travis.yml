@@ -22,13 +22,12 @@ before_script:
   - echo "$DOCKERHUB_PASSWORD" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 jobs:
   include:
-    - script:
-      - sudo docker build -t sagu/mozilla:cli mozilla
-      - sudo docker push sagu/mozilla:cli
+#    - script:
+#      - sudo docker build -t sagu/mozilla:cli mozilla
+#      - sudo docker push sagu/mozilla:cli
     - script:
       - sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
       - sudo docker push sagu/mozilla:latest
-      - sudo docker push sagu/mozilla:gui
 #script:
   #- cd ${arch}/ && docker build . --platform ${arch} -t sagu/mariadb-alpine:${arch}
   #- if [[ $arch == amd* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/amd64 -t sagu/mariadb-alpine:${arch} . --push; fi
