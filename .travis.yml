@@ -7,23 +7,34 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-script:
+install:
   #- export DOCKER_CLI_EXPERIMENTAL=enabled
   #- mkdir -p ~/.docker/cli-plugins
   #- wget -q https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O ~/.docker/cli-plugins/docker-buildx
   #- chmod a+x ~/.docker/cli-plugins/docker-buildx
   #- sudo service docker stop
   #- sudo dockerd --experimental &
-  - echo "$DOCKERHUB_PASSWORD" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   #- sudo docker run --rm --privileged docker/binfmt:66f9012c56a8316f9244ffd7622d7c21c1f6f28d
   #- sudo docker buildx create --name mybuilder
   #- sudo docker buildx use mybuilder
   #- sudo docker buildx inspect --bootstrap
+before_script:
+  - echo "$DOCKERHUB_PASSWORD" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+jobs:
+  include:
+    - script:
+      - sudo docker build -t sagu/mozilla:cli mozilla
+      - sudo docker push sagu/mozilla:cli
+    - script:
+      - sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
+      - sudo docker push sagu/mozilla:latest
+      - sudo docker push sagu/mozilla:gui
+#script:
   #- cd ${arch}/ && docker build . --platform ${arch} -t sagu/mariadb-alpine:${arch}
   #- if [[ $arch == amd* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/amd64 -t sagu/mariadb-alpine:${arch} . --push; fi
   #- if [[ $arch == arm* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/arm/v7 -t sagu/mariadb-alpine:${arch} . --push; fi
-  - sudo docker build -t sagu/mozilla:cli mozilla
-  - sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
-  - sudo docker push sagu/mozilla:latest
-  - sudo docker push sagu/mozilla:gui
-  - sudo docker push sagu/mozilla:cli
+  #- sudo docker build -t sagu/mozilla:cli mozilla
+  #- sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
+  #- sudo docker push sagu/mozilla:latest
+  #- sudo docker push sagu/mozilla:gui
+  #- sudo docker push sagu/mozilla:cli
