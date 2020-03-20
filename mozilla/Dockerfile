@@ -8,6 +8,7 @@ RUN curl https://sh.rustup.rs -sSf | \
 ENV PATH=~/.cargo/bin:$PATH
 RUN pip install mercurial
 RUN wget -q https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py -O bootstrap.py && python bootstrap.py --application-choice=browser --no-interactive; exit 0
+RUN apt-get clean
 
 ENV SHELL /bin/bash
 ENV CCACHE_DIR /ccache
