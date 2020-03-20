@@ -26,7 +26,7 @@ jobs:
 #      - sudo docker build -t sagu/mozilla:cli mozilla
 #      - sudo docker push sagu/mozilla:cli
     - script:
-      - sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
+      - sudo docker build -t sagu/mozilla:latest mozilla
       - sudo docker push sagu/mozilla:latest
 #script:
   #- cd ${arch}/ && docker build . --platform ${arch} -t sagu/mariadb-alpine:${arch}
