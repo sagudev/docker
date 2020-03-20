@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt upgrade -y && apt install wget curl firefox build-essential autoconf libtool python-pip python-dev python-setuptools -y --no-install-recommends
+RUN apt update && apt upgrade -y && apt install wget curl firefox python-pip -y
 
 RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
