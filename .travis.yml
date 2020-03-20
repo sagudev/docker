@@ -22,5 +22,8 @@ script:
   #- cd ${arch}/ && docker build . --platform ${arch} -t sagu/mariadb-alpine:${arch}
   #- if [[ $arch == amd* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/amd64 -t sagu/mariadb-alpine:${arch} . --push; fi
   #- if [[ $arch == arm* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/arm/v7 -t sagu/mariadb-alpine:${arch} . --push; fi
-  - sudo docker build -t sagu/mozilla:latest mozilla
+  - sudo docker build -t sagu/mozilla:cli mozilla
+  - sudo docker build -t sagu/mozilla:gui -t sagu/mozilla:latest mozillag
   - sudo docker push sagu/mozilla:latest
+  - sudo docker push sagu/mozilla:gui
+  - sudo docker push sagu/mozilla:cli
