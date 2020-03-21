@@ -1,12 +1,11 @@
 FROM ubuntu:18.04
-
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt upgrade -y && apt install wget curl firefox php php-curl git python3-pip python-pip -y
-
+# Rust install
 RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
 
 ENV PATH=~/.cargo/bin:$PATH
-ENV DEBIAN_FRONTEND=noninteractive
 RUN pip install mercurial hg-evolve
 RUN pip3 install --user MozPhab
 ENV PATH=~/.local/bin:$PATH
