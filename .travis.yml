@@ -1,13 +1,13 @@
 os: linux
 env:
   - arch: amd64
-before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+#before_install:
+  #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  #- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  #- sudo apt-get update
+  #- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-install:
+#install:
   #- export DOCKER_CLI_EXPERIMENTAL=enabled
   #- mkdir -p ~/.docker/cli-plugins
   #- wget -q https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O ~/.docker/cli-plugins/docker-buildx
@@ -18,16 +18,17 @@ install:
   #- sudo docker buildx create --name mybuilder
   #- sudo docker buildx use mybuilder
   #- sudo docker buildx inspect --bootstrap
-before_script:
-  - echo "$DOCKERHUB_PASSWORD" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+#before_script:
+  #- echo "$DOCKERHUB_PASSWORD" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 jobs:
   include:
 #    - script:
 #      - sudo docker build -t sagu/mozilla:cli mozilla
 #      - sudo docker push sagu/mozilla:cli
     - script:
-      - sudo docker build -t sagu/mozilla:latest mozilla
-      - sudo docker push sagu/mozilla:latest
+      - curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}' -X POST https://hub.docker.com/api/build/v1/source/da96d063-9863-426a-869a-a2d9ee161359/trigger/0bf2baff-2d09-4985-ab2b-3368c66f40a6/call/
+      #- sudo docker build -t sagu/mozilla:latest mozilla
+      #- sudo docker push sagu/mozilla:latest
 #script:
   #- cd ${arch}/ && docker build . --platform ${arch} -t sagu/mariadb-alpine:${arch}
   #- if [[ $arch == amd* ]] ; then cd ${arch}/ && sudo docker buildx build --platform linux/amd64 -t sagu/mariadb-alpine:${arch} . --push; fi
