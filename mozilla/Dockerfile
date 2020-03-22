@@ -17,4 +17,5 @@ COPY .hgrc /root
 ENV SHELL /bin/bash
 ENV CCACHE_DIR /ccache
 RUN mkdir /mozilla /ccache
+ENV MOZBUILD_STATE_PATH /mozilla/.mozbuild
 WORKDIR /mozilla
