@@ -34,11 +34,10 @@ and then you are ready to help firefox.
 
 Now run (dependencies and most configuration are already done):
 ```sh
-./mach bootstrap --no-system-changes
+./mach bootstrap
 ```
 
-#### Set up username
-This command sets username in the repo, so you do not have to enter it every time you restart docker
+#### Set up username in repo
 ```sh
-./mach bootstrap --no-system-changes
+nano ./hg/hgrc
 ```
