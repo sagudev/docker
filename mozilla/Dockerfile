@@ -1,10 +1,44 @@
+FROM ubuntu:18.04 AS builder
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    openssl \
+    libssl1.1
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    automake \
+    autoconf \
+    build-essential \
+    libtool \
+    libssl-dev \
+    pkg-config \
+    python-dev
+    
+ENV WATCHMAN_VERSION=4.9.0 \
+    WATCHMAN_SHA256=1f6402dc70b1d056fffc3748f2fdcecff730d8843bb6936de395b3443ce05322
+RUN cd /tmp \
+ && curl --silent --location --output watchman.tar.gz "https://github.com/facebook/watchman/archive/v${WATCHMAN_VERSION}.tar.gz" \
+ && echo "$WATCHMAN_SHA256 *watchman.tar.gz" | sha256sum -c - \
+ && tar -xz -f watchman.tar.gz -C /tmp/ \
+ && rm -rf watchman.tar.gz
+
+RUN cd /tmp/watchman-${WATCHMAN_VERSION} \
+ && ./autogen.sh \
+ && ./configure --enable-lenient \
+ && make \
+ && make install \
+ && cd $HOME \
+ && rm -rf /tmp/*
 FROM ubuntu:18.04
+COPY --from=builder /usr/local/bin/watchman* /usr/local/bin/
+COPY --from=builder /usr/local/share/doc/watchman-4.9.0 /usr/local/share/doc/watchman-4.9.0
+COPY --from=builder /usr/local/var/run/watchman /usr/local/var/run/watchman
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt upgrade -y && apt install wget curl firefox php php-curl git python3-pip python-pip -y
+RUN apt update && apt upgrade -y && apt install wget curl firefox php php-curl git python3-pip python-pip libssl1.1 -y
 # Rust install
 RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
-
 ENV PATH=~/.cargo/bin:$PATH
 RUN pip install mercurial hg-evolve
 RUN pip3 install --user MozPhab
