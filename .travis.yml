@@ -23,7 +23,7 @@ env:
 jobs:
   include:
     - script:
-      - curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}' -X POST https://hub.docker.com/api/build/v1/source/da96d063-9863-426a-869a-a2d9ee161359/trigger/0bf2baff-2d09-4985-ab2b-3368c66f40a6/call/
+      - ./trigger-mzla.sh
       #- sudo docker build -t sagu/mozilla:latest mozilla
       #- sudo docker push sagu/mozilla:latest
       #    - script:
