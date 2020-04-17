@@ -15,6 +15,7 @@ firefoxtree = /root/.mozbuild/version-control-tools/hgext/firefoxtree
 clang-format = /root/.mozbuild/version-control-tools/hgext/clang-format
 js-format = /root/.mozbuild/version-control-tools/hgext/js-format
 push-to-try = /root/.mozbuild/version-control-tools/hgext/push-to-try
+fsmonitor =
 [rebase]
 experimental.inmemory = yes
 [alias]
