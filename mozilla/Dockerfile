@@ -44,7 +44,7 @@ RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
 ENV PATH=~/.cargo/bin:$PATH
 RUN sudo pip install mercurial hg-evolve
-RUN pip3 install --user MozPhab
+RUN sudo pip3 install MozPhab
 ENV PATH=~/.local/bin:$PATH
 RUN wget -q https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py -O /home/wizard/bootstrap.py && python /home/wizard/bootstrap.py --application-choice=browser --no-interactive; exit 0
 RUN sudo apt-get clean
@@ -52,6 +52,5 @@ RUN hg clone https://hg.mozilla.org/hgcustom/version-control-tools /home/wizard/
 COPY .hgrc /home/wizard
 
 ENV SHELL /bin/bash
-ENV CCACHE_DIR /ccache
-RUN sudo mkdir /mozilla /ccache && sudo chown -R wizard /mozilla && sudo chown -R wizard /ccache
+RUN sudo mkdir /mozilla && sudo chown -R wizard /mozilla
 WORKDIR /mozilla
