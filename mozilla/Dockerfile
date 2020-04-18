@@ -5,8 +5,7 @@ RUN apt-get update \
     curl \
     openssl \
     libssl1.1
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
     automake \
     autoconf \
     build-essential \
@@ -30,25 +29,29 @@ RUN cd /tmp/watchman-${WATCHMAN_VERSION} \
  && make install \
  && cd $HOME \
  && rm -rf /tmp/*
+
 FROM ubuntu:18.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt upgrade -y && apt install sudo apt-utils tzdata -y
+RUN groupadd -g 1000 wizard && useradd -u 1000 -m -g 1000 wizard && usermod -g 0 wizard && echo "wizard ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER wizard
 COPY --from=builder /usr/local/bin/watchman* /usr/local/bin/
 COPY --from=builder /usr/local/share/doc/watchman-4.9.0 /usr/local/share/doc/watchman-4.9.0
 COPY --from=builder /usr/local/var/run/watchman /usr/local/var/run/watchman
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt upgrade -y && apt install wget curl firefox php php-curl git python3-pip python-pip libssl1.1 -y
+RUN sudo apt install wget curl firefox php php-curl git python3-pip python-pip libssl1.1 -y
 # Rust install
 RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
 ENV PATH=~/.cargo/bin:$PATH
-RUN pip install mercurial hg-evolve
+RUN sudo pip install mercurial hg-evolve
 RUN pip3 install --user MozPhab
 ENV PATH=~/.local/bin:$PATH
-RUN wget -q https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py -O bootstrap.py && python bootstrap.py --application-choice=browser --no-interactive; exit 0
-RUN apt-get clean
-RUN hg clone https://hg.mozilla.org/hgcustom/version-control-tools /root/.mozbuild/version-control-tools
-COPY .hgrc /root
+RUN wget -q https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py -O /home/wizard/bootstrap.py && python /home/wizard/bootstrap.py --application-choice=browser --no-interactive; exit 0
+RUN sudo apt-get clean
+RUN hg clone https://hg.mozilla.org/hgcustom/version-control-tools /home/wizard/.mozbuild/version-control-tools
+COPY .hgrc /home/wizard
 
 ENV SHELL /bin/bash
 ENV CCACHE_DIR /ccache
-RUN mkdir /mozilla /ccache
+RUN sudo mkdir /mozilla /ccache && sudo chown -R wizard /mozilla && sudo chown -R wizard /ccache
 WORKDIR /mozilla

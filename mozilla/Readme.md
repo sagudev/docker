@@ -32,7 +32,8 @@ hg clone https://hg.mozilla.org/mozilla-central/ .
 ```
 and then you are ready to help firefox.
 
-Now run (dependencies and most configuration are already done):
+#### Every time run when enter container
+
 ```sh
 ./mach bootstrap
 ```

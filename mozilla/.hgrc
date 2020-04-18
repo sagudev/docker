@@ -11,10 +11,10 @@ rebase =
 evolve = 
 blackbox = 
 shelve = 
-firefoxtree = /root/.mozbuild/version-control-tools/hgext/firefoxtree
-clang-format = /root/.mozbuild/version-control-tools/hgext/clang-format
-js-format = /root/.mozbuild/version-control-tools/hgext/js-format
-push-to-try = /root/.mozbuild/version-control-tools/hgext/push-to-try
+firefoxtree = /home/wizard/.mozbuild/version-control-tools/hgext/firefoxtree
+clang-format = /home/wizard/.mozbuild/version-control-tools/hgext/clang-format
+js-format = /home/wizard/.mozbuild/version-control-tools/hgext/js-format
+push-to-try = /home/wizard/.mozbuild/version-control-tools/hgext/push-to-try
 fsmonitor =
 [rebase]
 experimental.inmemory = yes
