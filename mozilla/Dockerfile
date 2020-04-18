@@ -47,7 +47,7 @@ RUN sudo pip install mercurial hg-evolve
 RUN sudo pip3 install MozPhab
 ENV PATH=~/.local/bin:$PATH
 RUN wget -q https://hg.mozilla.org/mozilla-central/raw-file/default/python/mozboot/bin/bootstrap.py -O /home/wizard/bootstrap.py && python /home/wizard/bootstrap.py --application-choice=browser --no-interactive; exit 0
-RUN sudo apt-get clean
+RUN sudo apt-get clean && sudo chmod 777 /usr/local/var/run/watchman
 RUN hg clone https://hg.mozilla.org/hgcustom/version-control-tools /home/wizard/.mozbuild/version-control-tools
 COPY .hgrc /home/wizard
 
