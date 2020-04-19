@@ -32,7 +32,7 @@ RUN cd /tmp/watchman-${WATCHMAN_VERSION} \
 
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt upgrade -y && apt install sudo apt-utils tzdata -y
+RUN apt update && apt upgrade -y && apt install sudo apt-utils nano vim tzdata -y
 RUN groupadd -g 1000 wizard && useradd -u 1000 -m -g 1000 wizard && usermod -g 0 wizard && echo "wizard ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER wizard
 COPY --from=builder /usr/local/bin/watchman* /usr/local/bin/
